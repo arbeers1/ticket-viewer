@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<head>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.6.0.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='ticket_displayer.js') }}"></script>
+    <script type="text/javascript"> var data = {{ simple }}</script>
+</head>
+<body onload="display_ticket_list()">
+    <h1>Zendesk Ticket Viewer</h1>
+    <p>Ticket Statistics:</p>
+    <p id="count">Total Count:</p>
+    <p>{{ simple[0] }}</p>
+    <table id="tv"><tbody id="#tb"></tbody></table>
+</body>
