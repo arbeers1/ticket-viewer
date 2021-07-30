@@ -8,46 +8,34 @@ import config
 
 class TicketViewer():
     
-    def get_tickets():
+    def get_tickets(page):
         """
-        Retrieves a list of tickets associated with the zendesk account ordered by date.
+        Retrieves a page of 25 tickets associated with the zendesk account ordered by date.
 
         Paramaters
-            None
+            page - the page number to retrieve
         
         Returns
             If operation is successful:
-            (True, [json page 1, json page 2, ...]) where each json page has a max of 100 tickets
+            (True, json of 25 tickets)
             If operation fails:
             (False, displayable error string)
         """
-        url_to_get = 'https://zcctreehugger.zendesk.com/api/v2/tickets.json'
-        final_result = []
-        #Loop through each page
-        while(True):
-            try:
-                response = requests.get(
-                    url= url_to_get,
-                    auth=('arbeers@wisc.edu', config.passw),
-                    params={'sort_by': 'created_at'},
-                    timeout=60)
-            except ConnectionError:
-                return (False, "An error has been encountered with the network :(")
-            except TimeoutError:
-                return (False, "Failed to retrieve a response from the server :(")
+        try:
+            response = requests.get(
+                url= 'https://zcctreehugger.zendesk.com/api/v2/tickets.json',
+                auth=('arbeers@wisc.edu', config.passw),
+                params={'sort_by': 'created_at', 'per_page': 25, 'page': page},
+                timeout=60)
+        except ConnectionError:
+            return (False, "An error has been encountered with the network :(")
+        except TimeoutError:
+            return (False, "Failed to retrieve a response from the server :(")
 
-            #Append response if api call is successful
-            if(response.status_code >= 200 and response.status_code < 300):
-                response = response.json()
-                final_result.append(response)
-                #Exit loop if no more pages are left, otherwise continue to the next page
-                if(response['next_page'] == None):
-                    break 
-                else:
-                    url_to_get = response['next_page']
-            else:
-                return (False, "An error has been encountered:\n" + str(response.status_code) + "\n" + response.reason)
-        return(True, final_result)
+        if(response.status_code >= 200 and response.status_code < 300):
+            return (True, response.json())
+        else:
+            return (False, "An error has been encountered:\n" + str(response.status_code) + "\n" + response.reason)
 
     def parse_tickets_simple(ticket_json, start_index, end_index=None):
         """
@@ -78,7 +66,7 @@ class TicketViewer():
         tickets = ticket_json['tickets']
         final_list = []
         for x in range(start_index, end_index):
-            priority = tickets[x]['priority']
+            priority = 'normal' if tickets[x]['priority'] == None else tickets[x]['priority']
             status = tickets[x]['status']
             id = tickets[x]['id']
             subject = tickets[x]['subject']
