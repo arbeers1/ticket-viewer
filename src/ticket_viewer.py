@@ -2,16 +2,15 @@
 #Description: Retrieve zendesk ticket details attached to an account
 #Author: Alex Beers
 
-from datetime import timezone
+from datetime import datetime, timezone
 import requests
-import datetime
 import config
 
 class TicketViewer():
     
     def get_tickets():
         """
-        Retrieves a list of tickets associated with the zendesk account.
+        Retrieves a list of tickets associated with the zendesk account ordered by date.
 
         Paramaters
             None
@@ -54,7 +53,7 @@ class TicketViewer():
         """
         Parses json ticket list and provides simple information about an individual ticket or a range of tickets.
         This method is intended to only return data useful for displaying tickets in a list. For more in depth 
-        information on individual tickets, use parse_tickets_detailed().
+        information on individual tickets, use parse_ticket_detailed().
 
         Paramaters
             ticket_json - A single page json as returned by get_tickets()
@@ -84,20 +83,64 @@ class TicketViewer():
             id = tickets[x]['id']
             subject = tickets[x]['subject']
             requester_name = TicketViewer._user_name(tickets[x]['requester_id'])
+
             if(requester_name[0]):
                 requester_name = requester_name[1]
             else:
                 raise LookupError(requester_name[1])
+
             time = TicketViewer._time_delta(tickets[x]['updated_at'])
             assignee_name = TicketViewer._user_name(tickets[x]['assignee_id'])
+
             if(assignee_name[0]):
                 assignee_name = assignee_name[1]
             else:
                 raise LookupError(assignee_name[1])
+
             final_list.append((priority, status, id, subject, requester_name, time, assignee_name))
         return final_list
             
-                 
+    def parse_ticket_detailed(ticket_json, index):
+        """
+        Parses json ticket list and provides in-depth information about an individual ticket.
+        This method is intended to return data useful for displaying an indivual ticket when a user clicks on it.
+
+        Paramaters
+            ticket_json - A single page json as returned by get_tickets()
+            index - The index ticket to parse
+
+        Returns
+            (priority, status, id, requester, assignee, [tags], subject, description, requester_updated)
+
+        Throws
+            ValueError if start index is not in range 0-99
+            IndexError if provided index is out of bounds of the provided json 'tickets' array
+            LookupError if user name look up fails
+        """    
+        if(index < 0 or index > 99):
+            raise ValueError("Index is out of page boundries")    
+
+        tickets = ticket_json['tickets']
+        priority = tickets[index]['priority']
+        status = tickets[index]['status']
+        id = tickets[index]['id']
+        requester_name = TicketViewer._user_name(tickets[index]['requester_id'])
+
+        if(requester_name[0]):
+            requester_name = requester_name[1]
+        else:
+            raise LookupError(requester_name[1])
+        assignee_name = TicketViewer._user_name(tickets[index]['assignee_id'])
+        if(assignee_name[0]):
+            assignee_name = assignee_name[1]
+        else:
+            raise LookupError(assignee_name[1])
+
+        tags = tickets[index]['tags']
+        subject = tickets[index]['subject']
+        description = tickets[index]['description']
+        time = TicketViewer._time_delta(tickets[index]['updated_at'])
+        return (priority, status, id, requester_name, assignee_name, tags, subject, description, time)
 
     def _user_name(user_id):
         """
@@ -139,9 +182,9 @@ class TicketViewer():
         Returns
             string with time difference
         """
-        orig_time = datetime.datetime(int(time[0:4]), int(time[5:7]), int(time[8:10]), int(time[11:13]),
+        orig_time = datetime(int(time[0:4]), int(time[5:7]), int(time[8:10]), int(time[11:13]),
                                       int(time[14:16]), int(time[17:19]), tzinfo=timezone.utc)
-        delta = datetime.datetime.now(timezone.utc) - orig_time
+        delta = datetime.now(timezone.utc) - orig_time
         if(delta.days > 0):
             return str(delta.days) + ' day(s) ago'
         else:

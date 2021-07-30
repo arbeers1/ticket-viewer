@@ -88,6 +88,35 @@ class TestTicketRetrieval(unittest.TestCase):
         with(self.assertRaises(IndexError)):
             tv.parse_tickets_simple(result[1][1], 0, 5)
 
+    def test_detailed_parse(self):
+        """
+        Test detailed ticket return
+        """
+        result = tv.get_tickets()
+        assert(result[0] == True)
+        parse = tv.parse_ticket_detailed(result[1][0], 0)
+        self.assertEqual(len(parse), 9)
+        self.assertEqual(parse[0], 'normal')
+        self.assertEqual(parse[1], 'open')
+        self.assertEqual(parse[2], 1)
+        self.assertEqual(parse[3], 'The Customer')
+        self.assertEqual(parse[4], 'Alex Beers')
+        self.assertEqual(len(parse[5]), 3)
+        self.assertEqual(parse[6], 'Sample ticket: Meet the ticket')
+        self.assertTrue('day' in parse[8])
+
+    def test_detailed_parse_errors_raised(self):
+        """
+        Test that the appropriate errors are raised in detailed parse
+        """
+        result = tv.get_tickets()
+        with(self.assertRaises(ValueError)):
+            tv.parse_ticket_detailed(result[1][0], 110)
+        with(self.assertRaises(ValueError)):
+            tv.parse_ticket_detailed(result[1][0], -1)
+
+        with(self.assertRaises(IndexError)):
+            tv.parse_ticket_detailed(result[1][1], 5)
 
 if __name__ == '__main__':
     unittest.main()
