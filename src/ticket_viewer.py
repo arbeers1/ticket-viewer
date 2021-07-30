@@ -5,7 +5,7 @@
 from datetime import datetime, timezone
 import json
 import requests
-import config
+from . import config
 
 class TicketViewer():
     
