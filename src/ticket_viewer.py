@@ -38,7 +38,7 @@ class TicketViewer():
         else:
             return (False, "An error has been encountered:\n" + str(response.status_code) + "\n" + response.reason)
 
-    def parse_tickets_simple(ticket_json, index):
+    def parse_ticket_simple(ticket_json, index):
         """
         Parses json ticket to strip of undesired data and convert user ids and time to usable format.
         This method is intended to only return data useful for displaying tickets in a list. For more in depth 
@@ -83,45 +83,23 @@ class TicketViewer():
             
     def parse_ticket_detailed(ticket_json, index):
         """
-        Parses json ticket list and provides in-depth information about an individual ticket.
-        This method is intended to return data useful for displaying an indivual ticket when a user clicks on it.
+        Parses json ticket list and provides information useful for when the user wants more information on an indivual ticket.
+        This method only returns description and tags, meaning it is recommended that simple_parse value is stored for a full 
+        ticket display.
 
         Paramaters
             ticket_json - A single page json as returned by get_tickets()
             index - The index ticket to parse
 
         Returns
-            (priority, status, id, requester, assignee, [tags], subject, description, requester_updated)
-
-        Throws
-            ValueError if start index is not in range 0-99
-            IndexError if provided index is out of bounds of the provided json 'tickets' array
-            LookupError if user name look up fails
+            json with key/value pairs:
+            tags: [tag1, tag2, ...], description: string
         """    
-        if(index < 0 or index > 99):
-            raise ValueError("Index is out of page boundries")    
-
         tickets = ticket_json['tickets']
-        priority = tickets[index]['priority']
-        status = tickets[index]['status']
-        id = tickets[index]['id']
-        requester_name = TicketViewer._user_name(tickets[index]['requester_id'])
+        tags_s = json.dumps(tickets[index]['tags'])
+        json_to_return = '{"tags":' + tags_s + ',"description":"' + tickets[index]['description'] + '"}'
 
-        if(requester_name[0]):
-            requester_name = requester_name[1]
-        else:
-            raise LookupError(requester_name[1])
-        assignee_name = TicketViewer._user_name(tickets[index]['assignee_id'])
-        if(assignee_name[0]):
-            assignee_name = assignee_name[1]
-        else:
-            raise LookupError(assignee_name[1])
-
-        tags = tickets[index]['tags']
-        subject = tickets[index]['subject']
-        description = tickets[index]['description']
-        time = TicketViewer._time_delta(tickets[index]['updated_at'])
-        return (priority, status, id, requester_name, assignee_name, tags, subject, description, time)
+        return json.loads(json_to_return, strict=False)
 
     def _user_name(user_id):
         """

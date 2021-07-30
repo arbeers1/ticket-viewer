@@ -46,13 +46,13 @@ class TestTicketRetrieval(unittest.TestCase):
         result = tv._user_name(-1)
         self.assertFalse(result[0])
 
-    def test_simple_parse_individual(self):
+    def test_simple_parse(self):
         """
-        Test the simple ticket parse (one ticket)
+        Test the simple ticket parse
         """
         result = tv.get_tickets(1)
         assert(result[0])
-        result = tv.parse_tickets_simple(result[1], 0)
+        result = tv.parse_ticket_simple(result[1], 0)
         self.assertEqual(result['priority'], 'normal')
         self.assertEqual(result['status'], 'open')
         self.assertEqual(result['id'], 1)
@@ -61,10 +61,16 @@ class TestTicketRetrieval(unittest.TestCase):
         self.assertTrue('day' in result['requester_updated'])
         self.assertEqual(result['assignee_name'], 'Alex Beers')
         
-    def test_detailed_parse_errors_raised(self):
+    def test_detailed_parse(self):
         """
-        Test that the appropriate errors are raised in detailed parse
+        Test the detailed ticket parse
         """
+        result = tv.get_tickets(1)
+        assert(result[0])
+        result = tv.parse_ticket_detailed(result[1], 0)
+        self.assertEqual(len(result['tags']), 3)
+        self.assertEqual(result['tags'][0], 'sample')
+        self.assertTrue('learn more' in result['description'])
        
 
 if __name__ == '__main__':
