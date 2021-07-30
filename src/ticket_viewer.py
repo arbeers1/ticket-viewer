@@ -58,7 +58,7 @@ class TicketViewer():
         Paramaters
             ticket_json - A single page json as returned by get_tickets()
             start_index - The index ticket to start parsing
-            end_index - (Optional) If provided method will parse between start/end index
+            end_index - (Optional) If provided method will parse between start/end index (NON-INCLUSIVE)
                                    Otherwise method will only parse start_index
 
         Returns
