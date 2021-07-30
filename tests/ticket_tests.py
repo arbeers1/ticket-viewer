@@ -5,7 +5,6 @@
 import unittest
 from datetime import datetime
 import sys
-import json
 sys.path[0] = sys.path[0].replace('tests', 'src')
 from ticket_viewer import TicketViewer as tv
 
@@ -18,8 +17,6 @@ class TestTicketRetrieval(unittest.TestCase):
         result = tv.get_tickets(1)
         self.assertTrue(result[0])
         self.assertEqual(result[1]['count'], 101)
-        with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(result, f, ensure_ascii=False, indent=4)
         self.assertEqual(len(result[1]['tickets']), 25)
         result = tv.get_tickets(5)
         self.assertEqual(len(result[1]['tickets']), 1)
@@ -53,17 +50,16 @@ class TestTicketRetrieval(unittest.TestCase):
         """
         Test the simple ticket parse (one ticket)
         """
-        
-    def test_simple_parse_multiple(self):
-        """
-        Test the simple ticket parse (multiple tickets)
-        """
-       
-
-    def test_simple_parse_errors_raised(self):
-        """
-        Test that the appropriate errors are raised in simple parse
-        """
+        result = tv.get_tickets(1)
+        assert(result[0])
+        result = tv.parse_tickets_simple(result[1], 0)
+        self.assertEqual(result['priority'], 'normal')
+        self.assertEqual(result['status'], 'open')
+        self.assertEqual(result['id'], 1)
+        self.assertEqual(result['subject'], 'Sample ticket: Meet the ticket')
+        self.assertEqual(result['requester_name'], 'The Customer')
+        self.assertTrue('day' in result['requester_updated'])
+        self.assertEqual(result['assignee_name'], 'Alex Beers')
         
     def test_detailed_parse_errors_raised(self):
         """

@@ -3,6 +3,7 @@
 #Author: Alex Beers
 
 from datetime import datetime, timezone
+import json
 import requests
 import config
 
@@ -37,56 +38,48 @@ class TicketViewer():
         else:
             return (False, "An error has been encountered:\n" + str(response.status_code) + "\n" + response.reason)
 
-    def parse_tickets_simple(ticket_json, start_index, end_index=None):
+    def parse_tickets_simple(ticket_json, index):
         """
-        Parses json ticket list and provides simple information about an individual ticket or a range of tickets.
+        Parses json ticket to strip of undesired data and convert user ids and time to usable format.
         This method is intended to only return data useful for displaying tickets in a list. For more in depth 
         information on individual tickets, use parse_ticket_detailed().
 
         Paramaters
             ticket_json - A single page json as returned by get_tickets()
-            start_index - The index ticket to start parsing
-            end_index - (Optional) If provided method will parse between start/end index (NON-INCLUSIVE)
-                                   Otherwise method will only parse start_index
+            index - The index ticket to parse
 
         Returns
-            [(ticket_details_1), (ticket_details2), ...]
-            where each ticket_details_n is a tuple formatted (priority, status, id, subject, requester, requester_updated, assignee)
+            json with the following key/value pairs:
+            priority: string, status: string, id: int, subject: string, requester_name: string, requester_updated: string, assignee: name 
 
         Throws
-            ValueError if start/end index is not in range 0-99
-            IndexError if provided index is out of bounds of the provided json 'tickets' array
             LookupError if user name look up fails
         """
-        if(end_index == None):
-            end_index = start_index + 1
-        if(start_index < 0 or start_index > 99 or end_index < 0 or end_index > 99):
-            raise ValueError("Index is out of page boundries")
 
         tickets = ticket_json['tickets']
-        final_list = []
-        for x in range(start_index, end_index):
-            priority = 'normal' if tickets[x]['priority'] == None else tickets[x]['priority']
-            status = tickets[x]['status']
-            id = tickets[x]['id']
-            subject = tickets[x]['subject']
-            requester_name = TicketViewer._user_name(tickets[x]['requester_id'])
 
-            if(requester_name[0]):
-                requester_name = requester_name[1]
-            else:
-                raise LookupError(requester_name[1])
+        requester_name = TicketViewer._user_name(tickets[index]['requester_id'])
+        if(requester_name[0]):
+            requester_name = requester_name[1]
+        else:
+            raise LookupError(requester_name[1])
 
-            time = TicketViewer._time_delta(tickets[x]['updated_at'])
-            assignee_name = TicketViewer._user_name(tickets[x]['assignee_id'])
+        assignee_name = TicketViewer._user_name(tickets[index]['assignee_id'])
+        if(assignee_name[0]):
+            assignee_name = assignee_name[1]
+        else:
+            raise LookupError(assignee_name[1])
 
-            if(assignee_name[0]):
-                assignee_name = assignee_name[1]
-            else:
-                raise LookupError(assignee_name[1])
+        priority = 'normal' if tickets[index]['priority'] == None else tickets[index]['priority']
 
-            final_list.append((priority, status, id, subject, requester_name, time, assignee_name))
-        return final_list
+        json_to_return = '''{"priority":"'''  + priority + '''",
+            "status":"''' + tickets[index]['status'] + '''",
+            "id":''' + str(tickets[index]['id']) + ''',
+            "subject":"''' + tickets[index]['subject'] + '''",
+            "requester_name":"''' + requester_name + '''",
+            "requester_updated":"''' + TicketViewer._time_delta(tickets[index]['updated_at']) + '''",
+            "assignee_name":"''' + assignee_name + '"}'
+        return json.loads(json_to_return)
             
     def parse_ticket_detailed(ticket_json, index):
         """
