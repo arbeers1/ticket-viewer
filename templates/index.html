@@ -6,7 +6,14 @@
 <body onload="get_tickets(1)">
     <h1>Zendesk Ticket Viewer</h1>
     <p>Ticket Statistics:</p>
-    <p id="count">Total Count:</p>
+    <p id="count">Total Tickets:</p>
     <p id="load"> Loading </p>
     <table id="tv"><tbody id="#tb"></tbody></table>
+    <p id="page_count">Displaying page of</p>
+    <div id="#navigation_controls">
+        <button class="nav" onclick="first()">First</button>
+        <button class="nav" id="prev" onclick="prev()">Previous Page</button>
+        <button class="nav" id="next" onclick="next()">Next Page</button>
+        <button class="nav" onclick="last()">Last</button>
+    </div>
 </body>

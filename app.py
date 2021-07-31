@@ -19,5 +19,5 @@ def tickets():
     user_cache = []
     for x in range (len(tks[1]['tickets'])):
         result.append(tv.parse_ticket_simple(tks[1], x, user_cache))
-    return jsonify(tickets = result)
+    return jsonify(tickets = result, count = tks[1]['count'])
 
