@@ -35,15 +35,16 @@ class TestTicketRetrieval(unittest.TestCase):
         """
         Test the help method _user_name() 
         """
-        result = tv._user_name(1265123600889)
+        cache = []
+        result = tv._user_name(1265123600889, cache)
         self.assertTrue(result[0])
         self.assertEqual(result[1], 'Alex Beers')
 
-        result = tv._user_name(1265063393490)
+        result = tv._user_name(1265063393490, cache)
         self.assertTrue(result[0])
         self.assertEqual(result[1], 'The Customer')
 
-        result = tv._user_name(-1)
+        result = tv._user_name(-1, cache)
         self.assertFalse(result[0])
 
     def test_simple_parse(self):
@@ -52,7 +53,8 @@ class TestTicketRetrieval(unittest.TestCase):
         """
         result = tv.get_tickets(1)
         assert(result[0])
-        result = tv.parse_ticket_simple(result[1], 0)
+        list = []
+        result = tv.parse_ticket_simple(result[1], 0, user_cache = list)
         self.assertEqual(result['priority'], 'normal')
         self.assertEqual(result['status'], 'open')
         self.assertEqual(result['id'], 1)

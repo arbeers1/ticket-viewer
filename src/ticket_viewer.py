@@ -38,7 +38,7 @@ class TicketViewer():
         else:
             return (False, "An error has been encountered:\n" + str(response.status_code) + "\n" + response.reason)
 
-    def parse_ticket_simple(ticket_json, index):
+    def parse_ticket_simple(ticket_json, index, user_cache):
         """
         Parses json ticket to strip of undesired data and convert user ids and time to usable format.
         This method is intended to only return data useful for displaying tickets in a list. For more in depth 
@@ -47,6 +47,7 @@ class TicketViewer():
         Paramaters
             ticket_json - A single page json as returned by get_tickets()
             index - The index ticket to parse
+            user_cache - A list cahce to store of users for when iterating over many users
 
         Returns
             json with the following key/value pairs:
@@ -55,16 +56,15 @@ class TicketViewer():
         Throws
             LookupError if user name look up fails
         """
-
         tickets = ticket_json['tickets']
 
-        requester_name = TicketViewer._user_name(tickets[index]['requester_id'])
+        requester_name = TicketViewer._user_name(tickets[index]['requester_id'], user_cache)
         if(requester_name[0]):
             requester_name = requester_name[1]
         else:
             raise LookupError(requester_name[1])
 
-        assignee_name = TicketViewer._user_name(tickets[index]['assignee_id'])
+        assignee_name = TicketViewer._user_name(tickets[index]['assignee_id'], user_cache)
         if(assignee_name[0]):
             assignee_name = assignee_name[1]
         else:
@@ -101,12 +101,13 @@ class TicketViewer():
 
         return json.loads(json_to_return, strict=False)
 
-    def _user_name(user_id):
+    def _user_name(user_id, user_cache):
         """
         Helper method for parsing tickets to retrieve the displayed user's name from an id.
 
         Paramaters
             user_id - an integer id number associated with a user
+            user_cache - a cache list of users. If no list exist, pass a empty list
 
         Returns
             If operation is successful:
@@ -115,6 +116,9 @@ class TicketViewer():
             (False, displayable error string)
 
         """
+        for x in user_cache:
+            if(x[0] == user_id):
+                return (True, x[1])
         try:
             response = requests.get(
                 url= 'https://zcctreehugger.zendesk.com/api/v2/users/' + str(user_id),
@@ -127,7 +131,9 @@ class TicketViewer():
 
         #Return username if api call successful
         if(response.status_code >= 200 and response.status_code < 300):
-            return (True, response.json()['user']['name'])
+            name = response.json()['user']['name']
+            user_cache.append((user_id, name))
+            return (True, name)
         else:
             return (False, "An error has been encountered:\n" + str(response.status_code) + "\n" + response.reason)
 
