@@ -3,7 +3,7 @@
     <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson }};</script>
     <script type=text/javascript src="{{ url_for('static', filename='ticket_displayer.js') }}"></script>
 </head>
-<body onload="get_tickets(1)">
+<body onload="let x = get_tickets(1, false);">
     <h1>Zendesk Ticket Viewer</h1>
     <p>Ticket Statistics:</p>
     <p id="count">Total Tickets:</p>
