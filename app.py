@@ -1,25 +1,24 @@
-import json
-from flask import Flask, render_template, jsonify
-from ticket_viewer import TicketViewer as tv
+from flask import Flask, render_template, jsonify, request
+from src.ticket_viewer import TicketViewer as tv
+from src import config
 
-simple_list = [] #Holds information on tickets to display in a list, where each element is a parse_ticket_simple() list
 #Start application
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    response = tv.get_tickets()
-    if(not response[0]): 
-        #TODO: return error
-        return render_template('index.html') 
-    
-    total_count = response[1][0]['count']
-    remainder = 100 if total_count % 100 == 0 else total_count % 100
-    for x in range(len(response[1])):
-        if(len(response[1]) <  len(response[1]) - 1):
-            simple_list.extend(tv.parse_tickets_simple(response[1][x], 0, 100))
-        else:
-            simple_list.extend(tv.parse_tickets_simple(response[1][x], 0, remainder))
-    data = jsonify(tickets=simple_list)
+    return render_template('index.html')
 
-    return render_template('index.html', simple = data)
+@app.route('/get_tickets', methods=['GET'])
+def tickets():
+    print('here')
+    tks = tv.get_tickets(request.args.get('page'))
+    if(not tks[0]):
+        #TODO: Return error page
+        raise NotImplementedError
+    
+    result = []
+    for x in range (len(tks[1]['tickets'])):
+        result.append(tv.parse_ticket_simple(tks[1], x))
+    print('return tickets')
+    return jsonify(tickets = result)

@@ -1,23 +1,26 @@
 //File: ticket_displayer.js
-//Description: Script for displaying tickets to the end user
-//Author: Alexander Beers
+//Description: Link backend to frontend, Extracts ticket data
+//Author: Alex Beers
 
-/**
- * Builds the HTML list of tickets, provided a list of tickets
- * 
- * @param - list, a list of simple view tickets obtained from ticket_viewer.py 
- */
-function display_ticket_list(){
-    console.log(data)
-    for(var i = 0; i < data.length; i++){
-        $('#tv > tbody:last-child').append('<tr>' + 
-        '<td>' + data[i][0] + '</td>' +
-        '<td>' + data[i][1] + '</td>' +
-        '<td>' + data[i][2] + '</td>' +
-        '<td>' + data[i][3] + '</td>' +
-        '<td>' + data[i][4] + '</td>' +
-        '<td>' + data[i][5] + '</td>' +
-        '<td>' + data[i][6] + '</td>' +
+function get_tickets(page_num){
+    $.getJSON($SCRIPT_ROOT + '/get_tickets', {
+        page: page_num
+    }, function(data) {
+        display_tickets(data)
+    }); 
+}
+
+function display_tickets(tks){
+    console.log(tks)
+    for(var i = 0; i < tks.tickets.length; i++){
+        $('#tv > tbody:last-child').append('<tr>'+
+        '<td>' + tks.tickets[i].priority + '</td>' +
+        '<td>' + tks.tickets[i].status + '</td>' + 
+        '<td>' + tks.tickets[i].id + '</td>' +
+        '<td>' + tks.tickets[i].subject + '</td>' +
+        '<td>' + tks.tickets[i].requester_name + '</td>' +
+        '<td>' + tks.tickets[i].requester_updated + '</td>' +
+        '<td>' + tks.tickets[i].assignee + '</td>' +
         '</tr>');
     }
 }
