@@ -1,0 +1,18 @@
+<head>
+    <script type=text/javascript src="{{ url_for('static', filename='jquery-3.6.0.js') }}"></script>
+    <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson }};</script>
+    <script type=text/javascript src="{{ url_for('static', filename='ticket_displayer.js') }}"></script>
+</head>
+<body>
+    <h1 id="id">Viewing Ticket #ID</h1>
+    <div id="stats">
+        <p id="req">Requester</p>
+        <p id="ass">Assignee</p>
+        <p id="tags">Tags</p>
+    </div>
+    <div id="content">
+        <h2 id="subject">subject</h2>
+        <p id="req2">Requester</p>
+        <p id="desc">Description</p>
+    </div>
+</body>
