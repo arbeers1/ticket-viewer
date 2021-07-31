@@ -65,7 +65,8 @@ function display_tickets(tks){
     $('#tv tbody').empty();
     url_extension = '/detailed'
     for(var i = 0; i < tks.tickets.length; i++){
-        $('#tv > tbody:last-child').append('<tr onclick="go_to_detailed()"> '+
+        $('#tv > tbody:last-child').append('<tr id=' + i +
+        ' onclick="go_to_detailed(' + i + ')">' +
         '<td>' + tks.tickets[i].priority + '</td>' +
         '<td>' + tks.tickets[i].status + '</td>' + 
         '<td>' + tks.tickets[i].id + '</td>' +
@@ -132,7 +133,38 @@ function last(){
 /**
  * Makes a request for the ticket detailed view and the needed information
  */
-function go_to_detailed(){
-    console.log('here');
-    location.href = location.href + '/detailed';
+function go_to_detailed(id){
+    localStorage.setItem('priority', $('#tv').find('tr:eq('+ id + ')').find("td:eq(0)").html());
+    localStorage.setItem('status', $('#tv').find('tr:eq('+ id + ')').find("td:eq(1)").html());
+    localStorage.setItem('id', $('#tv').find('tr:eq('+ id + ')').find("td:eq(2)").html());
+    localStorage.setItem('subject', $('#tv').find('tr:eq('+ id + ')').find("td:eq(3)").html());
+    localStorage.setItem('rn', $('#tv').find('tr:eq('+ id + ')').find("td:eq(4)").html());
+    localStorage.setItem('up', $('#tv').find('tr:eq('+ id + ')').find("td:eq(5)").html());
+    localStorage.setItem('assign', $('#tv').find('tr:eq('+ id + ')').find("td:eq(6)").html());
+    localStorage.setItem('page', curr_page);
+    localStorage.setItem('total_page', total_pages);
+    localStorage.setItem('index', id);
+
+    window.location.href = location.href + '/detailed';
+}
+
+function update_detailed(){
+    console.log('here')
+    $('#id').text('Viewing Ticket #' + localStorage.getItem('id'));
+    $('#req').text('Requester: ' + localStorage.getItem('rn'));
+    $('#ass').text('Assignee: ' + localStorage.getItem('assign'));
+    $('#subject').text(localStorage.getItem('subject'));
+    $('#req2').text(localStorage.getItem('rn'));
+
+    $.getJSON($SCRIPT_ROOT + '/detailedinfo',{
+        page: localStorage.getItem('page'),
+        index: localStorage.getItem('index')
+    }, function(data){
+        $('#desc').text(data.description);
+        let tags = 'Tags: ';
+        for(var i = 0; i < data.tags.length; i++){
+            tags += data.tags[i] + ' ';
+        }
+        $('#tags').text(tags);
+    });
 }

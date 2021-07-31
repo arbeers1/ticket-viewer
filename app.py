@@ -21,8 +21,14 @@ def tickets():
         result.append(tv.parse_ticket_simple(tks[1], x, user_cache))
     return jsonify(tickets = result, count = tks[1]['count'])
 
-@app.route('/detailed', methods = ['GET'])
+@app.route('/detailed')
 def detailed():
-    print('here')
     return render_template('ticket.html')
 
+@app.route('/detailedinfo', methods=['GET'])
+def detailed_info():
+    tks = tv.get_tickets(int(request.args.get('page')))
+    if(not tks[0]):
+        #TODO: Return error page
+        raise NotImplementedError    
+    return tv.parse_ticket_detailed(tks[1], int(request.args.get('index')))
