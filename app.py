@@ -16,7 +16,6 @@ def index():
 def tickets():
     tks = tv.get_tickets(request.args.get('page'))
     if(not tks[0]):
-        #TODO: Return error page
        return jsonify(tickets='none', count = 'none', error=tks[1])
     
     result = []
@@ -34,6 +33,5 @@ def detailed():
 def detailed_info():
     tks = tv.get_tickets(int(request.args.get('page')))
     if(not tks[0]):
-        #TODO: Return error page
-        raise NotImplementedError    
-    return tv.parse_ticket_detailed(tks[1], int(request.args.get('index')))
+        return jsonify(main='none', error=tks[1])    
+    return jsonify(main=tv.parse_ticket_detailed(tks[1], int(request.args.get('index'))), error='none')

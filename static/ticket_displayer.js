@@ -168,7 +168,6 @@ function go_to_detailed(id){
 }
 
 function update_detailed(){
-    console.log('here')
     $('#id').text('Viewing Ticket #' + localStorage.getItem('id'));
     $('#req').text('Requester: ' + localStorage.getItem('rn'));
     $('#ass').text('Assignee: ' + localStorage.getItem('assign'));
@@ -179,11 +178,17 @@ function update_detailed(){
         page: localStorage.getItem('page'),
         index: localStorage.getItem('index')
     }, function(data){
-        $('#desc').text(data.description);
-        let tags = 'Tags: ';
-        for(var i = 0; i < data.tags.length; i++){
-            tags += data.tags[i] + ' ';
+        if(data.error == 'none'){
+            $('#error').css('visibility', 'hidden');
+            $('#desc').text(data.main.description);
+            let tags = 'Tags: ';
+            for(var i = 0; i < data.main.tags.length; i++){
+                tags += data.main.tags[i] + ' ';
+            }
+            $('#tags').text(tags);
+        }else{
+            $('#error').text(data.error);
+            $('#error').css('visibility', 'visible');
         }
-        $('#tags').text(tags);
     });
 }
