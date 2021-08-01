@@ -35,7 +35,6 @@ function get_tickets(page_num, cache, load){
                 curr_page = page_num;
                 display_tickets(data);
             }else{
-                console.log('cached');
                 page_cache[page_num - 1] = data;
             }
         }
@@ -97,7 +96,6 @@ function display_tickets(tks){
  * Displays the next page of results in the table
  */
 function next(){
-    console.log(curr_page);
     if(curr_page < total_pages){
         curr_page++;
     }
@@ -112,7 +110,6 @@ function next(){
  * Displays the previous page of results in the table
  */
 function prev(){
-    console.log(curr_page);
     if(curr_page > 1){
         curr_page--;
     }
@@ -127,7 +124,6 @@ function prev(){
  * Displays the first page of results in the table
  */
 function first(){
-    console.log(curr_page);
     curr_page = 1;
     if(page_cache[curr_page - 1] !== undefined){
         display_tickets(page_cache[curr_page - 1]);
@@ -140,7 +136,6 @@ function first(){
  * Displays the last page of results in the table
  */
 function last(){
-    console.log(curr_page);
     curr_page = total_pages;
     if(page_cache[curr_page - 1] !== undefined){
         display_tickets(page_cache[curr_page - 1]);
