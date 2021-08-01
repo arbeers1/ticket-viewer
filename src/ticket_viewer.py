@@ -30,7 +30,7 @@ class TicketViewer():
                 timeout=60)
         except ConnectionError:
             return (False, "An error has been encountered with the network :(")
-        except TimeoutError:
+        except requests.exceptions.Timeout:
             return (False, "Failed to retrieve a response from the server :(")
 
         if(response.status_code >= 200 and response.status_code < 300):
