@@ -47,3 +47,6 @@ h1{
     text-align: center;
 }
 
+td:hover{
+    cursor: pointer;
+}
