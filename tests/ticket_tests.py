@@ -4,6 +4,7 @@
 
 import unittest
 from datetime import datetime
+import json
 import sys
 sys.path[0] = sys.path[0].replace('tests', 'src')
 from ticket_viewer import TicketViewer as tv
@@ -51,10 +52,9 @@ class TestTicketRetrieval(unittest.TestCase):
         """
         Test the simple ticket parse
         """
-        result = tv.get_tickets(1)
-        assert(result[0])
-        list = []
-        result = tv.parse_ticket_simple(result[1], 0, user_cache = list)
+        file = open('data.json')
+        data = json.load(file)
+        result = tv.parse_ticket_simple(data, 0, user_cache = [])
         self.assertEqual(result['priority'], 'normal')
         self.assertEqual(result['status'], 'open')
         self.assertEqual(result['id'], 1)
@@ -62,17 +62,19 @@ class TestTicketRetrieval(unittest.TestCase):
         self.assertEqual(result['requester_name'], 'The Customer')
         self.assertTrue('day' in result['requester_updated'])
         self.assertEqual(result['assignee_name'], 'Alex Beers')
+        file.close()
         
     def test_detailed_parse(self):
         """
         Test the detailed ticket parse
         """
-        result = tv.get_tickets(1)
-        assert(result[0])
-        result = tv.parse_ticket_detailed(result[1], 0)
+        file = open('data.json')
+        data = json.load(file)
+        result = tv.parse_ticket_detailed(data, 0)
         self.assertEqual(len(result['tags']), 3)
         self.assertEqual(result['tags'][0], 'sample')
         self.assertTrue('learn more' in result['description'])
+        file.close()
        
 
 if __name__ == '__main__':
