@@ -3,7 +3,7 @@
 //Author: Alex Beers
 
 var total_pages = 0;
-var curr_page = -1;
+var curr_page = -1
 var cached = false;
 var page_cache = [] //This is a page cache list which will periodically update.
                     //Helps reduce load times by periodically updating the cache vs. calling api on user demand
@@ -11,15 +11,22 @@ var page_cache = [] //This is a page cache list which will periodically update.
 
 /**
  * Calls the flask app to get the data for the desired page.
- * @param {*} page_num - page number to display
+ * @param {*} page_num - page number to display, pass -2 to get current page
  * @param cahce - True or False, if True then data is stored in page_cache, otherwise display_tickets is auto called
+ * @param load - True if loading the page for the first time 
  */
-function get_tickets(page_num, cache){
+function get_tickets(page_num, cache, load){
+    if(load && localStorage.getItem('page') !== 'undefined'){
+        page_num = localStorage.getItem('page');
+        curr_page = page_num;
+        localStorage.setItem('page', 'undefined');
+    }
+
     $.getJSON($SCRIPT_ROOT + '/get_tickets', {
         page: page_num
     }, function(data) {
-        curr_page = page_num;
         if(!cache){
+            curr_page = page_num;
             display_tickets(data);
         }else{
             console.log('cached');
@@ -34,11 +41,11 @@ function get_tickets(page_num, cache){
 function cache_tickets(){
     cached = !cached;
     for(var i = 0; i < total_pages; i++){
-        get_tickets(i + 1, true);
+        get_tickets(i + 1, true, false);
     }
     setInterval(function(){
         for(var i = 0; i < total_pages; i++){
-            get_tickets(i + 1, true);
+            get_tickets(i + 1, true, false);
         }
     }, 10000)
 }
@@ -82,13 +89,14 @@ function display_tickets(tks){
  * Displays the next page of results in the table
  */
 function next(){
+    console.log(curr_page);
     if(curr_page < total_pages){
         curr_page++;
     }
     if(page_cache[curr_page - 1] !== undefined){
         display_tickets(page_cache[curr_page - 1]);
     }else{
-        get_tickets(curr_page, false);
+        get_tickets(curr_page, false, false);
     }
 }
 
@@ -96,13 +104,14 @@ function next(){
  * Displays the previous page of results in the table
  */
 function prev(){
+    console.log(curr_page);
     if(curr_page > 1){
         curr_page--;
     }
     if(page_cache[curr_page - 1] !== undefined){
         display_tickets(page_cache[curr_page - 1]);
     }else{
-        get_tickets(curr_page, false);
+        get_tickets(curr_page, false, false);
     }
 }
 
@@ -110,11 +119,12 @@ function prev(){
  * Displays the first page of results in the table
  */
 function first(){
+    console.log(curr_page);
     curr_page = 1;
     if(page_cache[curr_page - 1] !== undefined){
         display_tickets(page_cache[curr_page - 1]);
     }else{
-        get_tickets(curr_page, false);
+        get_tickets(curr_page, false, false);
     }
 }
 
@@ -122,11 +132,12 @@ function first(){
  * Displays the last page of results in the table
  */
 function last(){
+    console.log(curr_page);
     curr_page = total_pages;
     if(page_cache[curr_page - 1] !== undefined){
         display_tickets(page_cache[curr_page - 1]);
     }else{
-        get_tickets(curr_page, false);
+        get_tickets(curr_page, false, false);
     }
 }
 

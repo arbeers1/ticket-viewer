@@ -1,12 +1,16 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 from src.ticket_viewer import TicketViewer as tv
+import os
 
 #Start application
 app = Flask(__name__)
+app.secret_key = os.urandom(16)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
 
 @app.route('/get_tickets', methods=['GET'])
 def tickets():
@@ -23,6 +27,7 @@ def tickets():
 
 @app.route('/detailed')
 def detailed():
+    session["vis"] = True
     return render_template('ticket.html')
 
 @app.route('/detailedinfo', methods=['GET'])
