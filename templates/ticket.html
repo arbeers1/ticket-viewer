@@ -1,4 +1,6 @@
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='detailed.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
     <script type=text/javascript src="{{ url_for('static', filename='jquery-3.6.0.js') }}"></script>
     <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson }};</script>
     <script type=text/javascript src="{{ url_for('static', filename='ticket_displayer.js') }}"></script>
@@ -6,12 +8,14 @@
 <body onload="update_detailed()">
     <h1 id="id">Viewing Ticket #ID</h1>
     <div id="error" style="visibility: hidden;">Error message here</div>
-    <div>
+    <div id="wrapper">
+        <div id="div1"></div>
         <div id="stats">
             <p id="req">Requester</p>
             <p id="ass">Assignee</p>
             <p id="tags">Tags: </p>
         </div>
+        <div id="div2"></div>
         <div id="content">
             <h2 id="subject">subject</h2>
             <p id="req2">Requester</p>

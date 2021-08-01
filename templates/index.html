@@ -1,16 +1,28 @@
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
     <script type=text/javascript src="{{ url_for('static', filename='jquery-3.6.0.js') }}"></script>
     <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson }};</script>
     <script type=text/javascript src="{{ url_for('static', filename='ticket_displayer.js') }}"></script>
 </head>
 <body onload="get_tickets(1, false, true);">
     <h1>Zendesk Ticket Viewer</h1>
-    <p id="count">Total Tickets:</p>
     <p id="load"> Loading </p>
     <p id="error" style="visibility: hidden;">Error message here</p>
-    <table id="tv"><tbody id="#tb"></tbody></table>
+    <p id="count">Total Tickets:</p>
+    <table>
+        <th colspan="1">Priority</th>
+        <th colspan="1">Status</th>
+        <th colspan="1">Id</th>
+        <th colspan="1">Subject</th>
+        <th colspan="1">Requester</th>
+        <th colspan="1">Last Updated</th>
+        <th colspan="1">Assignee</th>
+    </table>
+    <table id="tv">
+        <tbody id="#tb"></tbody>
+    </table>
     <p id="page_count">Displaying page of</p>
-    <div id="#navigation_controls">
+    <div id="navigation_controls">
         <button class="nav" onclick="first()">First</button>
         <button class="nav" id="prev" onclick="prev()">Previous Page</button>
         <button class="nav" id="next" onclick="next()">Next Page</button>

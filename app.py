@@ -10,8 +10,6 @@ app.secret_key = os.urandom(16)
 def index():
     return render_template('index.html')
 
-
-
 @app.route('/get_tickets', methods=['GET'])
 def tickets():
     tks = tv.get_tickets(request.args.get('page'))
