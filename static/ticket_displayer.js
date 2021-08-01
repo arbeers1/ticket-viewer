@@ -25,12 +25,19 @@ function get_tickets(page_num, cache, load){
     $.getJSON($SCRIPT_ROOT + '/get_tickets', {
         page: page_num
     }, function(data) {
-        if(!cache){
-            curr_page = page_num;
-            display_tickets(data);
+        if(data.error != 'none'){
+            $('#error').text(data.error);
+            $('#error').css('visibility', 'visible');
+            $('#load').css('visibility', 'hidden');
         }else{
-            console.log('cached');
-            page_cache[page_num - 1] = data;
+            $('#error').css('visibility', 'hidden');
+            if(!cache){
+                curr_page = page_num;
+                display_tickets(data);
+            }else{
+                console.log('cached');
+                page_cache[page_num - 1] = data;
+            }
         }
     }); 
 }
