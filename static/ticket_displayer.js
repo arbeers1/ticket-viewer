@@ -67,6 +67,7 @@ function display_tickets(tks){
     }else{
         $("#next").removeAttr("disabled");
     }
+    $('#load').css('visibility', 'hidden')
     $('#count').text('Total Tickets: ' + tks.count); 
     $('#page_count').text('Displaying page ' + curr_page + ' of ' + total_pages);
     $('#tv tbody').empty();
