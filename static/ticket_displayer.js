@@ -167,6 +167,9 @@ function go_to_detailed(id){
     window.location.href = location.href + '/detailed';
 }
 
+/**
+ * Populates the detailed ticket view 
+ */
 function update_detailed(){
     $('#id').text('Viewing Ticket #' + localStorage.getItem('id'));
     $('#req').text('Requester: ' + localStorage.getItem('rn'));
