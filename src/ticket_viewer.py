@@ -24,7 +24,7 @@ class TicketViewer():
         """
         try:
             response = requests.get(
-                url= 'https://zcctreehugger.zendesk.com/api/v2/tickets.json',
+                url= 'https://zccwisc.zendesk.com/api/v2/tickets.json',
                 auth=('arbeers@wisc.edu', config.passw),
                 params={'sort_by': 'created_at', 'per_page': 25, 'page': page},
                 timeout=60)
@@ -121,7 +121,7 @@ class TicketViewer():
                 return (True, x[1])
         try:
             response = requests.get(
-                url= 'https://zcctreehugger.zendesk.com/api/v2/users/' + str(user_id),
+                url= 'https://zccwisc.zendesk.com/api/v2/users/' + str(user_id),
                 auth=('arbeers@wisc.edu', config.passw),
                 timeout=60)
         except ConnectionError:
